@@ -1,5 +1,34 @@
 # URD - příkazy do databáze 
 
+## Implementace databáze
+
+### VYTVOŘENÍ TABULKY
+``` {SQL}
+CREATE TABLE public."Napoje" (
+    id_napoje integer PRIMARY KEY,
+    nazev_napoje text,
+    objem_napoje numeric,
+    cena_napoje money,
+);
+```
+### PŘIDÁNÍ CIZÍHO KLÍČE DO TABULKY
+``` {SQL}
+ALTER TABLE public."Napoje" ADD CONSTRAINT id_typ_napoje FOREIGN KEY (id_typ_napoje) REFERENCES public."Typy_napoju"(id_typ_napoje);
+```
+
+### PLNĚNÍ DATY - IMPORT Z CSV SOUBORU , UTF-8
+``` {SQL}
+COPY public."Napoje" FROM 'C:\majda LS\URD\Napoje_2.csv' DELIMITER ';' CSV HEADER;
+```
+
+### PŘIDÁNÍ ŘÁDKU 
+``` {SQL}
+INSERT INTO public."Recepty" (mnozstvi_ml, id_suroviny, id_napoje)
+VALUES (400,046,049);
+```
+
+## Příkazy 
+
 ## 0. Průměrný počet záznamů na tabulku
 ``` {SQL}
 SELECT SUM(cnt) / COUNT(*) AS prumer_zaznamu_na_tabulku
