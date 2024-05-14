@@ -147,7 +147,7 @@ SELECT public."Rezervace".jmeno_rezervujiciho, COUNT(*) AS pocet_rezervaci
 FROM public."Rezervace"
 GROUP BY public."Rezervace".jmeno_rezervujiciho
 ORDER BY pocet_rezervaci DESC
-LIMIT 1;
+LIMIT 2;
 ```
 
 ## 7. Seznam číšníků, co vyřídili více než 3 objednávky
