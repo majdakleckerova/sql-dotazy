@@ -31,7 +31,9 @@ VALUES (400,046,049);
 ``` {SQL}
 SELECT * FROM public."Napoje" WHERE id_typ_napoje = '03';
 ```
-
+``` {SQL}
+SELECT * FROM public."Napoje" WHERE cena_napoje <= 100::money ;
+``` 
 ## Příkazy 
 
 ## 0. Průměrný počet záznamů na tabulku
