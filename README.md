@@ -69,7 +69,7 @@ počet tabulek | počet záznamů | průměrný počet záznamů na tabulku
 --- | --- | ---
 11 | 455| 41.3636364
 
-## 1. Nejaktivnější barman :) (nejvíc směn)
+## 1. 5 NejaktivnějšíCH barmanŮ :) (nejvíc směn)
 
 ``` {SQL}
 SELECT public."Pracovnici".id_pracovnika, public."Pracovnici".jmeno, public."Pracovnici".prijmeni, COUNT(public."Rozpisy_smen".id_smeny) AS pocet_smen
