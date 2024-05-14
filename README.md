@@ -27,6 +27,11 @@ INSERT INTO public."Recepty" (mnozstvi_ml, id_suroviny, id_napoje)
 VALUES (400,046,049);
 ```
 
+### FILTROVÁNÍ DAT Z DATABÁZE
+``` {SQL}
+SELECT * FROM public."Napoje" WHERE id_typ_napoje = '03';
+```
+
 ## Příkazy 
 
 ## 0. Průměrný počet záznamů na tabulku
