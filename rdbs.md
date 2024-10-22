@@ -1,7 +1,7 @@
 # ZÁPOČET
 ## Připravené příkazy nad DB
 ### a) SELECT (4x)
-- *jeden SELECT vypočte průměrný počet záznamů na jednu tabulku v DB*
+- jeden SELECT vypočte **průměrný počet záznamů** na jednu tabulku v DB
 ```sql
 SELECT SUM(cnt) / COUNT(*) AS prumer_zaznamu_na_tabulku
 FROM (
@@ -28,3 +28,8 @@ FROM (
 	SELECT COUNT(*) FROM public."Typy_napoju"
 ) AS counts; 
 ```
+
+- jeden SELECT bude obsahovat **vnořený SELECT**
+- jeden SELECT bude obsahovat nějakou **analytickou funkci** (SUM, COUNT, AVG,…) spolu
+s agregační klauzulí GROUP BY
+- jeden SELECT bude řešit **rekurzi** nebo hierarchii (SELF JOIN)
