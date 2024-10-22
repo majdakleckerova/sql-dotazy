@@ -30,6 +30,7 @@ FROM (
 ```
 
 - jeden SELECT bude obsahovat **vnořený SELECT**
+  	... *Kolikrát byl každý nápoj objednán*
 ```sql
 SELECT public."Napoje".id_napoje, public."Napoje".nazev_napoje, 
        (SELECT COUNT(*) 
@@ -39,6 +40,17 @@ FROM public."Napoje"
 ORDER BY pocet_objednavek DESC;
 ```
 
-- jeden SELECT bude obsahovat nějakou **analytickou funkci** (SUM, COUNT, AVG,…) spolu
-s agregační klauzulí GROUP BY
+- jeden SELECT bude obsahovat nějakou **analytickou funkci** (SUM, COUNT, AVG,…) spolu s agregační klauzulí GROUP BY
+	... *průměrná cena nápoje pro každý typ nápoje*
+```sql
+SELECT public."Typy_napoju".nazev_typu,
+	AVG(public."Napoje".cena_napoje::numeric) AS prumerna_cena
+FROM public."Napoje" 
+	JOIN public."Typy_napoju" 
+	ON public."Napoje".id_typ_napoje = public."Typy_napoju".id_typ_napoje
+	GROUP BY public."Typy_napoju".nazev_typu
+	ORDER BY prumerna_cena;
+```
+
+
 - jeden SELECT bude řešit **rekurzi** nebo hierarchii (SELF JOIN)
