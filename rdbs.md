@@ -1,7 +1,7 @@
 # ZÁPOČET
 ## Připravené příkazy nad DB
-### SELECT (4x)
-*jeden SELECT vypočte průměrný počet záznamů na jednu tabulku v DB*
+### a) SELECT (4x)
+- *jeden SELECT vypočte průměrný počet záznamů na jednu tabulku v DB*
 ```sql
 SELECT SUM(cnt) / COUNT(*) AS prumer_zaznamu_na_tabulku
 FROM (
