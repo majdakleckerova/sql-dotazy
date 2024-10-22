@@ -2,7 +2,7 @@
 ## Připravené příkazy nad DB
 ### SELECT (4x)
 *jeden SELECT vypočte průměrný počet záznamů na jednu tabulku v DB*
-{```sql
+```sql
 SELECT SUM(cnt) / COUNT(*) AS prumer_zaznamu_na_tabulku
 FROM (
     SELECT COUNT(*) AS cnt FROM public."Napoje"
@@ -27,4 +27,4 @@ FROM (
 	UNION ALL
 	SELECT COUNT(*) FROM public."Typy_napoju"
 ) AS counts; 
-```}
+```
