@@ -55,7 +55,7 @@ FROM public."Napoje"
 
 - jeden SELECT bude řešit **rekurzi** nebo hierarchii (SELF JOIN)
   	... *Vrací pozice a jejich nadřízené pozice*
-  ```sql
+```sql
   SELECT p1.id_pozice AS pozice_id, 
        p1.nazev_pozice AS nazev_pozice, 
        p2.id_pozice AS id_nadrizene_pozice, 
@@ -64,4 +64,4 @@ FROM public."Pozice" p1
 LEFT JOIN public."Pozice" p2
 ON p1.id_nadpozice = p2.id_pozice
 ORDER BY p1.id_pozice;
-  ```
+```
