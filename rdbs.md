@@ -30,6 +30,15 @@ FROM (
 ```
 
 - jeden SELECT bude obsahovat **vnořený SELECT**
+```sql
+SELECT public."Napoje".id_napoje, public."Napoje".nazev_napoje, 
+       (SELECT COUNT(*) 
+        FROM public."Polozky_objednavky" 
+        WHERE public."Polozky_objednavky".id_napoje = public."Napoje".id_napoje) AS pocet_objednavek
+FROM public."Napoje"
+ORDER BY pocet_objednavek DESC;
+```
+
 - jeden SELECT bude obsahovat nějakou **analytickou funkci** (SUM, COUNT, AVG,…) spolu
 s agregační klauzulí GROUP BY
 - jeden SELECT bude řešit **rekurzi** nebo hierarchii (SELF JOIN)
