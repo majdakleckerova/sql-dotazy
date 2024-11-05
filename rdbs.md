@@ -113,12 +113,12 @@ CHYBA: Key (telefonni_cislo)=(717133951) already exists.duplicate key value viol
 	**Výpočet profitu na konkrétním nápoji**
 ```sql
 CREATE OR REPLACE FUNCTION public."profit"(zvoleny_napoj VARCHAR)
-RETURNS NUMERIC AS $$
+RETURNS money AS $$
 DECLARE
-    profit NUMERIC;
+    profit money;
 BEGIN
     SELECT 
-        (public."Napoje".cena_napoje - SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml)) INTO profit
+        (public."Napoje".cena_napoje - SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml))::money INTO profit
     FROM 
         public."Napoje"
     JOIN 
