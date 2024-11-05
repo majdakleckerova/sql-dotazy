@@ -107,3 +107,34 @@ VALUES
 ```sql
 CHYBA: Key (telefonni_cislo)=(717133951) already exists.duplicate key value violates unique constraint "idx_unikat_telefon" 
 ```
+### d) FUNCTION (1x)
+- která bude realizovat výpočet nějaké hodnoty z dat v DB
+
+	**Výpočet profitu na konkrétním nápoji**
+```sql
+CREATE OR REPLACE FUNCTION public."profit"(zvoleny_napoj VARCHAR)
+RETURNS NUMERIC AS $$
+DECLARE
+    profit NUMERIC;
+BEGIN
+    SELECT 
+        (public."Napoje".cena_napoje - SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml)) INTO profit
+    FROM 
+        public."Napoje"
+    JOIN 
+        public."Recepty" ON public."Napoje".id_napoje = public."Recepty".id_napoje
+    JOIN 
+        public."Suroviny" ON public."Recepty".id_suroviny = public."Suroviny".id_suroviny
+    WHERE 
+        public."Napoje".nazev_napoje = zvoleny_napoj
+    GROUP BY 
+        public."Napoje".nazev_napoje, public."Napoje".cena_napoje;
+
+    RETURN profit;
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+```sql
+SELECT public."profit"('Mojito');
+```
