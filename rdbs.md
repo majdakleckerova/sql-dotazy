@@ -65,3 +65,27 @@ LEFT JOIN public."Pozice" p2
 ON p1.id_nadpozice = p2.id_pozice
 ORDER BY p1.id_pozice;
 ```
+
+### b) VIEW (1X)
+s podstatnými informacemi z několika tabulek najednou
+- alespoň **tři** tabulky, mezi informacemi nemají figurovat FK a nedůležité informace
+- pro spojení tabulek použijte různé typy příkazu **JOIN** (inner, left, right, natural, …)
+
+```sql
+CREATE VIEW public."Recepty_na_koktejly" AS
+SELECT
+    public."Napoje".nazev_napoje,
+    public."Typy_napoju".druh_napoje, 
+    public."Suroviny".nazev_suroviny,
+    public."Recepty".mnozstvi_ml
+FROM
+    public."Napoje"
+    INNER JOIN public."Typy_napoju" ON public."Napoje".id_typ_napoje = public."Typy_napoju".id_typ_napoje 
+	LEFT JOIN public."Recepty" ON public."Napoje".id_napoje = public."Recepty".id_napoje
+    NATURAL JOIN public."Suroviny" 
+WHERE
+    public."Typy_napoju".druh_napoje IN ('alkoholický','nealkoholický'); 
+```
+```sql
+SELECT * FROM public."Recepty_na_koktejly"
+```
