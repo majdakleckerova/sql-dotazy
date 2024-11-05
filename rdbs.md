@@ -139,37 +139,3 @@ $$ LANGUAGE plpgsql;
 SELECT public."profit"('Mojito');
 ```
 
-#### 2. funkce - vrací řádek s infromacemi 
-... název nápoje, cena , náklady, profit
-```sql
-CREATE OR REPLACE FUNCTION public."info_o_napoji"(zvoleny_napoj VARCHAR)
-RETURNS TABLE (
-    nazev_napoje VARCHAR,
-    cena_napoje money,
-    naklady money,
-    profit money
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        public."Napoje".nazev_napoje,
-        public."Napoje".cena_napoje,
-        SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml)::money AS naklady,
-        (public."Napoje".cena_napoje - SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml))::money AS profit
-    FROM 
-        public."Napoje"
-    JOIN 
-        public."Recepty" ON public."Napoje".id_napoje = public."Recepty".id_napoje
-    JOIN 
-        public."Suroviny" ON public."Recepty".id_suroviny = public."Suroviny".id_suroviny
-    WHERE 
-        public."Napoje".nazev_napoje = zvoleny_napoj
-    GROUP BY 
-        public."Napoje".nazev_napoje, public."Napoje".cena_napoje;
-
-END; 
-$$ LANGUAGE plpgsql;
-```
-```sql
-SELECT public."info_o_napoji"('Mojito');
-```
