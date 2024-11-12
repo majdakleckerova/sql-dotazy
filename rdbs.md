@@ -139,3 +139,78 @@ $$ LANGUAGE plpgsql;
 SELECT public."profit"('Mojito');
 ```
 
+### e) PROCEDURE (1x)
+- která bude používat **1x CURSOR** a také **1x ošetření chyb** (HANDLER /
+TRY…CATCH / RAISE / EXCEPTION - dle zvoleného DBMS)
+- např. vytvoří a naplní novou tabulku informacemi o náhodných slevách na vybrané
+výrobky, nebo zákazníkům vygeneruje slevové bonusy podle určitých podmínek, apod.
+
+	- vytvoření view **Profity_napoju**
+```{sql}
+CREATE OR REPLACE VIEW public."Profity_Napoju" AS
+SELECT 
+    public."Napoje".nazev_napoje,
+    public."Napoje".cena_napoje::money AS cena_napoje,
+    SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml)::money AS naklady_na_napoj,
+    (public."Napoje".cena_napoje - SUM(public."Suroviny".cena_za_ml * public."Recepty".mnozstvi_ml))::money AS profit
+FROM 
+    public."Napoje"
+JOIN 
+    public."Recepty" ON public."Napoje".id_napoje = public."Recepty".id_napoje
+JOIN 
+    public."Suroviny" ON public."Recepty".id_suroviny = public."Suroviny".id_suroviny
+GROUP BY 
+    public."Napoje".nazev_napoje, public."Napoje".cena_napoje;
+```
+
+	- vytvoření tabulky **SlevyNaNapojich**
+ ```{sql}
+CREATE TABLE public."SlevyNaNapojich" (
+    id SERIAL PRIMARY KEY,
+    nazev_napoje VARCHAR NOT NULL,
+    puvodni_cena MONEY,
+    sleva_percent NUMERIC,
+    nova_cena MONEY
+);
+```
+
+	- procedura **SlevyNaNejziskovejsiNapoje** , dávající top 10 nejziskovějším nápojům slevu 10%
+```{sql}
+CREATE OR REPLACE PROCEDURE public."SlevyNaNejziskovejsiNapoje"()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    napoj_cursor CURSOR FOR 
+        SELECT nazev_napoje, cena_napoje, profit 
+        FROM public."Profity_Napoju"
+        ORDER BY profit DESC
+        LIMIT 10;
+    record RECORD;
+    nova_cena MONEY;
+BEGIN
+    OPEN napoj_cursor;
+
+    LOOP
+        FETCH napoj_cursor INTO record;
+        EXIT WHEN NOT FOUND;
+
+        nova_cena := record.cena_napoje * 0.9;
+
+        BEGIN
+            INSERT INTO public."SlevyNaNapojich" (nazev_napoje, puvodni_cena, sleva_percent, nova_cena)
+            VALUES (record.nazev_napoje, record.cena_napoje, 10, nova_cena);
+        EXCEPTION
+            WHEN OTHERS THEN
+                RAISE NOTICE 'Chyba při vkládání slevy pro nápoj %', record.nazev_napoje;
+        END;
+    END LOOP;
+
+    CLOSE napoj_cursor;
+END;
+$$;
+```
+
+		- volání procedury:
+```{sql}
+CALL public."SlevyNaNejziskovejsiNapoje"();
+```
