@@ -272,3 +272,72 @@ WHERE id_pracovnika = 1;
 ```sql
 SELECT * FROM public."LogZmenyCislaUctu";
 ```
+
+### TRANSACTION (1x)
+- použít v některé z předchozích procedur / funkcí
+- tj. uzavřít skupinu příkazů do transakce a ošetřit případ, kdy není možné všechny uvedené
+příkazy vykonat najednou (ROLLBACK)
+- např. převod peněz z jednoho účtu na druhý uzavřít do transakce + ošetřit situaci kdy
+odesilatel nemá na účtu dostatek financí na provedení převodu
+- START/BEGIN TRANSACTION, COMMIT, ROLLBACK (případně i SAVEPOINT)
+
+```sql
+CREATE TABLE public."Tydenni_vyplaty" (
+    id_pracovnika INT,
+    jmeno VARCHAR,
+    prijmeni VARCHAR,
+    vyplata MONEY,
+    zacatek_tydne DATE,
+    konec_tydne DATE
+);
+```
+
+```sql
+CREATE OR REPLACE PROCEDURE public."VypocetVyplat"(zacatek_tydne DATE, konec_tydne DATE)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    rec RECORD;
+    start_of_week DATE;
+    end_of_week DATE;
+BEGIN
+    -- Cyklus pro číšníky a barmany
+    FOR rec IN 
+        SELECT 
+            public."Pracovnici".id_pracovnika, 
+            public."Pracovnici".jmeno,
+            public."Pracovnici".prijmeni,
+            public."Pozice".mzda, 
+            SUM(public."Rozpisy_smen".pocet_hodin) AS celkove_hodiny,
+            DATE_TRUNC('week', public."Rozpisy_smen".datum_smeny) AS start_of_week, 
+            DATE_TRUNC('week', public."Rozpisy_smen".datum_smeny) + INTERVAL '6 days' AS end_of_week
+        FROM 
+            public."Pracovnici"
+        LEFT JOIN 
+            public."Rozpisy_smen" ON public."Pracovnici".id_pracovnika IN (public."Rozpisy_smen".id_cisnika, public."Rozpisy_smen".id_barmana)
+        LEFT JOIN 
+            public."Pozice" ON public."Pracovnici".id_pozice = public."Pozice".id_pozice
+        WHERE 
+            public."Rozpisy_smen".datum_smeny >= zacatek_tydne
+            AND public."Rozpisy_smen".datum_smeny <= konec_tydne
+        GROUP BY 
+            public."Pracovnici".id_pracovnika, 
+            public."Pracovnici".jmeno, 
+            public."Pracovnici".prijmeni, 
+            public."Pozice".mzda, 
+            DATE_TRUNC('week', public."Rozpisy_smen".datum_smeny)
+    LOOP
+        INSERT INTO public."Tydenni_vyplaty" (id_pracovnika, jmeno, prijmeni, vyplata, zacatek_tydne, konec_tydne)
+        VALUES (rec.id_pracovnika, rec.jmeno, rec.prijmeni, rec.mzda * rec.celkove_hodiny, rec.start_of_week, rec.end_of_week);
+    END LOOP;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE;
+END;
+$$;
+```
+
+
+
+
