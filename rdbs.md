@@ -145,7 +145,7 @@ TRY…CATCH / RAISE / EXCEPTION - dle zvoleného DBMS)
 - např. vytvoří a naplní novou tabulku informacemi o náhodných slevách na vybrané
 výrobky, nebo zákazníkům vygeneruje slevové bonusy podle určitých podmínek, apod.
 
-	- vytvoření view **Profity_napoju**
+- vytvoření view **Profity_napoju**
    
 ```sql
 CREATE OR REPLACE VIEW public."Profity_Napoju" AS
@@ -164,7 +164,7 @@ GROUP BY
     public."Napoje".nazev_napoje, public."Napoje".cena_napoje;
 ```
 
-	- vytvoření tabulky **SlevyNaNapojich**
+- vytvoření tabulky **SlevyNaNapojich**
 ```sql
 CREATE TABLE public."SlevyNaNapojich" (
     id SERIAL PRIMARY KEY,
@@ -175,7 +175,7 @@ CREATE TABLE public."SlevyNaNapojich" (
 );
 ```
 
-	- procedura **SlevyNaNejziskovejsiNapoje** , dávající top 10 nejziskovějším nápojům slevu 10%
+- procedura **SlevyNaNejziskovejsiNapoje** , dávající top 10 nejziskovějším nápojům slevu 10%
  ```sql
 CREATE OR REPLACE PROCEDURE public."SlevyNaNejziskovejsiNapoje"()
 LANGUAGE plpgsql
@@ -210,7 +210,65 @@ BEGIN
 END;
 $$;
 ```
-		- volání procedury:
+- volání procedury:
 ```sql
 CALL public."SlevyNaNejziskovejsiNapoje"();
+```
+
+### f) TRIGGER (1x)
+- který ošetří práci uživatele s daty DB
+- využívají se hlavně pro příkazy INSERT, **UPDATE**, DELETE nad nějakou tabulkou, ale můžete zkusit i jiný typ triggeru
+- např. pro UPDATE do nové tabulky zapíše datum, čas a informace o uživateli, který nějakým způsobem upravoval data v dané tabulce
+
+  - nová tabulka **LogZmenyCislaUctu**
+```sql
+CREATE TABLE public."LogZmenyCislaUctu" (
+    id_log SERIAL PRIMARY KEY,
+    id_pracovnika INT,
+    datum_zmeny TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    puvodni_cislo_uctu VARCHAR,
+    nove_cislo_uctu VARCHAR,
+    uzivatel VARCHAR
+);
+```
+
+- nová funkce **LogujZmenyCislaUctu** 
+```sql
+CREATE OR REPLACE FUNCTION public."LogujZmenyCislaUctu"()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public."LogZmenyCislaUctu" (
+        id_pracovnika,
+        datum_zmeny,
+        puvodni_cislo_uctu,
+        nove_cislo_uctu,
+        uzivatel
+    )
+    VALUES (
+        OLD.id_pracovnika,
+        CURRENT_TIMESTAMP,
+        OLD.cislo_uctu,
+        NEW.cislo_uctu,
+        current_user
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+- trigger **trigger_log_zmen_cisla_uctu**
+```sql
+CREATE TRIGGER trigger_log_zmen_cisla_uctu
+AFTER UPDATE OF cislo_uctu ON public."Pracovnici"
+FOR EACH ROW
+EXECUTE FUNCTION public."LogujZmenyCislaUctu"();
+```
+
+- **zkouška**
+```sql
+UPDATE public."Pracovnici"
+SET cislo_uctu = '1234567890'
+WHERE id_pracovnika = 1;
+```
+```sql
+SELECT * FROM public."LogZmenyCislaUctu";
 ```
