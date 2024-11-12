@@ -146,7 +146,7 @@ TRY…CATCH / RAISE / EXCEPTION - dle zvoleného DBMS)
 výrobky, nebo zákazníkům vygeneruje slevové bonusy podle určitých podmínek, apod.
 
 	- vytvoření view **Profity_napoju**
-```{sql}
+```sql
 CREATE OR REPLACE VIEW public."Profity_Napoju" AS
 SELECT 
     public."Napoje".nazev_napoje,
@@ -164,7 +164,7 @@ GROUP BY
 ```
 
 	- vytvoření tabulky **SlevyNaNapojich**
- ```{sql}
+ ```sql
 CREATE TABLE public."SlevyNaNapojich" (
     id SERIAL PRIMARY KEY,
     nazev_napoje VARCHAR NOT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE public."SlevyNaNapojich" (
 ```
 
 	- procedura **SlevyNaNejziskovejsiNapoje** , dávající top 10 nejziskovějším nápojům slevu 10%
-```{sql}
+```sql
 CREATE OR REPLACE PROCEDURE public."SlevyNaNejziskovejsiNapoje"()
 LANGUAGE plpgsql
 AS $$
@@ -209,8 +209,7 @@ BEGIN
 END;
 $$;
 ```
-
 		- volání procedury:
-```{sql}
+```sql
 CALL public."SlevyNaNejziskovejsiNapoje"();
 ```
