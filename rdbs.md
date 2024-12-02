@@ -273,7 +273,7 @@ WHERE id_pracovnika = 1;
 SELECT * FROM public."LogZmenyCislaUctu";
 ```
 
-### TRANSACTION (1x)
+### g) TRANSACTION (1x)
 - použít v některé z předchozích procedur / funkcí
 - tj. uzavřít skupinu příkazů do transakce a ošetřit případ, kdy není možné všechny uvedené
 příkazy vykonat najednou (ROLLBACK)
@@ -337,6 +337,57 @@ EXCEPTION
 END;
 $$;
 ```
+
+### h) USER 
+- mít předem připravené příkazy na ukázku práce s účty uživatelů
+1.  umět vytvořit/odstranit účet uživatele **CREATE/DROP USER**
+```sql
+CREATE USER majda WITH PASSWORD 'majda123';
+```
+```sql
+DROP USER majda;
+```
+2. umět se přihlásit jako právě vytvořený uživatel a ověřit dostupnost databází z pohledu nového uživatele
+   **Servers** -> **Registrovat** -> **Server...** -> *Název, uživatelské jméno, heslo, údržbová databáze...*
+   
+3. umět vytvořit/odstranit roli CREATE/DROP ROLE (některé DBMS nemají role)
+```sql
+CREATE ROLE vytvoreni_databaze WITH LOGIN PASSWORD 'role123' CREATEDB;
+```
+```sql
+CREATE ROLE role WITH LOGIN PASSWORD 'role123';
+```
+
+```sql
+DROP ROLE vytvoreni_databaze;
+```
+
+5. umět přidělit/odebrat uživateli nebo roli nějaká práva GRANT / REVOKE
+
+```sql
+GRANT CONNECT ON DATABASE "URDzapocet_bar" TO majda;
+```
+```sql
+GRANT CREATE ON SCHEMA public TO majda;
+```
+
+```sql
+GRANT SELECT, INSERT, UPDATE ON public."Tydenni_vyplaty" TO majda;
+```
+```sql
+GRANT SELECT,INSERT ON public."Napoje", public."Recepty", public."Suroviny" TO role;
+```
+```sql
+REVOKE INSERT ON public."Napoje", public."Recepty", public."Suroviny" FROM role;
+```
+
+```sql
+GRANT role TO majda;
+```
+```sql
+REVOKE role FROM majda;
+```
+
 
 
 
