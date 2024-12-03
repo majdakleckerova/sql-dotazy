@@ -408,7 +408,7 @@ GRANT USAGE, SELECT ON SEQUENCE public."LogZmenyCislaUctu_id_log_seq" TO majda;
 - mít předem připravené příkazy na ukázku zamykání tabulek
 - umět zamknout/odemknout tabulku (případně celou databázi, nebo jen řádek - pokud to 
 zvolený DBMS umožňuje)
-
+(access share lock)
 - zamknutí tabulky
 ```sql
 BEGIN;
