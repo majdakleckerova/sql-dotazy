@@ -26,6 +26,8 @@ FROM (
 	SELECT COUNT(*) FROM public."Suroviny"
 	UNION ALL
 	SELECT COUNT(*) FROM public."Typy_napoju"
+	UNION ALL
+	SELECT COUNT(*) FROM public."Tydenni_vyplaty"
 ) AS counts; 
 ```
 
