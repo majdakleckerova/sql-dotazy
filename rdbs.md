@@ -107,7 +107,7 @@ CREATE UNIQUE INDEX idx_unikat_telefon ON public."Pracovnici"(telefoni_cislo);
 *použití - přidání dalšího pracovníka se stejným teleofnním číslem*
 ```sql
 INSERT INTO public."Pracovnici" 
-(id_pracovnika, jmeno, prijmeni, datum_narozeni, adresa, telefonni_cislo, uvazek, cislo_uctu, datum_nastupu, id_pozice) 
+(id_pracovnika, jmeno, prijmeni, datum_narozeni, adresa, telefoni_cislo, uvazek, cislo_uctu, datum_nastupu, id_pozice) 
 VALUES 
 (022,'Petr', 'Černý', '1985-05-15', 'Nějaká ulice 123, Praha', '717133951', 'DPP', '123456789/0800', '2023-01-01', 1);
 ```
