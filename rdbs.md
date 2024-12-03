@@ -102,7 +102,7 @@ indexový soubor nad nějakým sloupcem tabulky
 - alespoň jeden **netriviální** indexový soubor (unikátní, fulltextový, …)
   
 ```sql
-CREATE UNIQUE INDEX idx_unikat_telefon ON public."Pracovnici"(telefonni_cislo);
+CREATE UNIQUE INDEX idx_unikat_telefon ON public."Pracovnici"(telefoni_cislo);
 ```
 *použití - přidání dalšího pracovníka se stejným teleofnním číslem*
 ```sql
