@@ -463,5 +463,67 @@ stoly_vetsi_nez_prumer = session.query(stoly).filter(stoly.kapacita_stolu > subq
 for stul in stoly_vetsi_nez_prumer:
     print(f"Stůl ID: {stul.id_stolu}, Název stolu: {stul.nazev_stolu}, Kapacita: {stul.kapacita_stolu}")
 ```
+### rekurze s SQLalchemy
+```sql
+GRANT SELECT ON public."Pozice" to majda;
+```
+```python
+from sqlalchemy import create_engine, func
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import aliased
+import pandas as pd
+import matplotlib.pyplot as plt
+
+engine = create_engine('postgresql://majda:majda123@localhost:5432/URDzapocet_bar')
+
+Base = automap_base()
+Base.prepare(engine, reflect=True)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+Pozice = Base.classes.Pozice
+Pracovnici = Base.classes.Pracovnici
+
+p1 = Pozice.__table__.alias('p1')
+p2 = Pozice.__table__.alias('p2')
+
+dotaz = session.query(
+    p1.c.id_pozice.label('id_pozice'),
+    p1.c.nazev_pozice.label('nazev_pozice'),
+    p2.c.id_pozice.label('id_nadrizene_pozice'),
+    p2.c.nazev_pozice.label('nazev_nadrizene_pozice'),
+    Pracovnici.id_pracovnika.label('id_pracovnika_nadrizene_pozice'),
+    func.concat(Pracovnici.jmeno, ' ', Pracovnici.prijmeni).label('jmeno_prijmeni_nadrizene_pozice')
+).join(
+    p2, p1.c.id_nadpozice == p2.c.id_pozice, isouter=True
+).join(
+    Pracovnici, Pracovnici.id_pozice == p2.c.id_pozice, isouter=True
+).order_by(p1.c.id_pozice).all()
+
+#for row in query:
+#    print(f"ID Pozice: {row.id_pozice}, Název Pozice: {row.nazev_pozice}, "
+#          f"ID Nadřízené Pozice: {row.id_nadrizene_pozice}, "
+#          f"Název Nadřízené Pozice: {row.nazev_nadrizene_pozice}, "
+ #         f"ID Pracovníka: {row.id_pracovnika_nadrizene_pozice}, "
+  #        f"Jméno a Příjmení Nadřízené Pozice: {row.jmeno_prijmeni_nadrizene_pozice}")
+
+df = pd.DataFrame(dotaz, sloupce=[
+    'id_pozice', 'nazev_pozice', 'id_nadrizene_pozice', 
+    'nazev_nadrizene_pozice', 'id_pracovnika_nadrizene_pozice', 
+    'jmeno_prijmeni_nadrizene_pozice'
+])
+
+print(df)
+
+fig, ax = plt.subplots(figsize=(15, 6))
+ax.axis('off')
+table = ax.table(cellText=df.values, colLabels=df.columns, cellLoc='center', loc='center')
+table.auto_set_font_size(False)
+table.set_fontsize(10)
+table.auto_set_column_width([i for i in range(len(df.columns))])
+plt.show()
+```
 
 
