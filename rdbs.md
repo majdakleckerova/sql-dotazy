@@ -51,7 +51,7 @@ FROM public."Napoje"
 	JOIN public."Typy_napoju" 
 	ON public."Napoje".id_typ_napoje = public."Typy_napoju".id_typ_napoje
 	GROUP BY public."Typy_napoju".nazev_typu
-	ORDER BY prumerna_cena;
+	ORDER BY prumerna_cena DESC;
 ```
 
 
