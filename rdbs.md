@@ -58,13 +58,18 @@ FROM public."Napoje"
 - jeden SELECT bude řešit **rekurzi** nebo hierarchii (SELF JOIN)
   	... *Vrací pozice a jejich nadřízené pozice*
 ```sql
-  SELECT p1.id_pozice AS pozice_id, 
+SELECT p1.id_pozice AS id_pozice, 
        p1.nazev_pozice AS nazev_pozice, 
        p2.id_pozice AS id_nadrizene_pozice, 
-       p2.nazev_pozice AS nadrizena_pozice
+       p2.nazev_pozice AS nazev_nadrizene_pozice,
+       pr1.id_pracovnika AS id_pracovnika_nadrizene_pozice,
+       CONCAT(pr1.jmeno, ' ', pr1.prijmeni) AS jmeno_prijmeni_nadrizene_pozice
 FROM public."Pozice" p1
 LEFT JOIN public."Pozice" p2
-ON p1.id_nadpozice = p2.id_pozice
+  ON p1.id_nadpozice = p2.id_pozice
+LEFT JOIN public."Pracovnici" pr1
+  ON pr1.id_pozice = p2.id_pozice
+WHERE p2.id_pozice IN (3, 4, 5)
 ORDER BY p1.id_pozice;
 ```
 
