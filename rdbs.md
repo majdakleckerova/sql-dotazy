@@ -388,7 +388,65 @@ GRANT role TO majda;
 REVOKE role FROM majda;
 ```
 
+### i) LOCK
+- mít předem připravené příkazy na ukázku zamykání tabulek
+- umět zamknout/odemknout tabulku (případně celou databázi, nebo jen řádek - pokud to 
+zvolený DBMS umožňuje)
 
+- zamknutí tabulky
+```sql
+BEGIN;
 
+LOCK TABLE public."Pracovnici" IN ACCESS EXCLUSIVE MODE;
+
+UPDATE public."Pracovnici"
+SET prijmeni = 'Marková'
+WHERE id_pracovnika = 5;
+SELECT * FROM pg_locks
+COMMIT;
+```
+- zamknutí řádku
+```sql
+BEGIN;
+
+SELECT * 
+FROM public."Pracovnici"
+WHERE id_pracovnika = 5
+FOR UPDATE;
+
+UPDATE public."Pracovnici"
+SET prijmeni = 'Marková 2'
+WHERE id_pracovnika = 5;
+
+COMMIT;
+```
+### j) ORM - sqlalchemy
+```sql
+GRANT SELECT ON TABLE public."Stoly" TO majda;
+```
+
+```python
+from sqlalchemy import create_engine, func
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import desc
+
+engine = create_engine('postgresql://majda:majda123@localhost:5432/URDzapocet_bar')
+
+Base = automap_base()
+Base.prepare(engine, reflect=True)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+stoly = Base.classes.Stoly
+subquery = session.query(func.avg(stoly.kapacita_stolu)).scalar()
+result = session.query(func.count(stoly.nazev_stolu)).filter(stoly.kapacita_stolu > subquery).scalar()
+print(f"\nPrůměrná kapacita stolu: {subquery}\nPočet stolů s kapacitou větší než průměr: {result}; to jest:")
+
+stoly_vetsi_nez_prumer = session.query(stoly).filter(stoly.kapacita_stolu > subquery).order_by(desc(stoly.kapacita_stolu)).all()
+for stul in stoly_vetsi_nez_prumer:
+    print(f"Stůl ID: {stul.id_stolu}, Název stolu: {stul.nazev_stolu}, Kapacita: {stul.kapacita_stolu}")
+```
 
 
