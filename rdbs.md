@@ -394,6 +394,12 @@ GRANT role TO majda;
 ```sql
 REVOKE role FROM majda;
 ```
+```sql
+GRANT SELECT, UPDATE, DELETE, INSERT ON public."LogZmenyCislaUctu" to majda;
+```
+```sql
+GRANT USAGE, SELECT ON SEQUENCE public."LogZmenyCislaUctu_id_log_seq" TO majda;
+```
 
 ### i) LOCK
 - mít předem připravené příkazy na ukázku zamykání tabulek
