@@ -69,7 +69,6 @@ LEFT JOIN public."Pozice" p2
   ON p1.id_nadpozice = p2.id_pozice
 LEFT JOIN public."Pracovnici" pr1
   ON pr1.id_pozice = p2.id_pozice
-WHERE p2.id_pozice IN (3, 4, 5)
 ORDER BY p1.id_pozice;
 ```
 
