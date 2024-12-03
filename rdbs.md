@@ -334,15 +334,18 @@ BEGIN
             public."Pozice".mzda, 
             DATE_TRUNC('week', public."Rozpisy_smen".datum_smeny)
     LOOP
-        INSERT INTO public."Tydenni_vyplaty" (id_pracovnika, jmeno, prijmeni, vyplata, zacatek_tydne, konec_tydne)
-        VALUES (rec.id_pracovnika, rec.jmeno, rec.prijmeni, rec.mzda * rec.celkove_hodiny, rec.start_of_week, rec.end_of_week);
+        INSERT INTO public."Tydenni_vyplaty" (id_pracovnika, jmeno, prijmeni, vyplata, zacatek_tydne, konec_tydne, pocet_hodin)
+        VALUES (rec.id_pracovnika, rec.jmeno, rec.prijmeni, rec.mzda * rec.celkove_hodiny, rec.start_of_week, rec.end_of_week, rec.celkove_hodiny);
     END LOOP;
-
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE;
+        RAISE NOTICE 'Chyba při výpočtu výplat: %', SQLERRM;
+        ROLLBACK;
 END;
 $$;
+```
+```sql
+CALL public."VypocetVyplat"('2024-04-01', '2024-04-07');
 ```
 
 ### h) USER 
