@@ -419,6 +419,7 @@ SET prijmeni = 'Marková'
 WHERE id_pracovnika = 5;
 SELECT * FROM pg_locks
 COMMIT;
+COMMIT;
 ```
 - zamknutí řádku
 ```sql
