@@ -55,6 +55,19 @@ FROM public."Napoje"
 ```
 
 
+```sql
+SELECT 
+  p.id_pracovnika,
+  p.jmeno,
+  p.prijmeni,
+  v.vyplata,
+  RANK() OVER (ORDER BY v.vyplata DESC) AS rank
+FROM 
+  public."Pracovnici" p
+JOIN 
+  public."Tydenni_vyplaty" v ON p.id_pracovnika = v.id_pracovnika;
+```
+
 - jeden SELECT bude řešit **rekurzi** nebo hierarchii (SELF JOIN)
   	... *Vrací pozice a jejich nadřízené pozice*
 ```sql
